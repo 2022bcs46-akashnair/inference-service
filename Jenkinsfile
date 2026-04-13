@@ -20,6 +20,7 @@ pipeline {
             steps {
                 echo "Running container..."
                 sh """
+                docker rm -f $CONTAINER_NAME || true
                 docker run -d -p $PORT:$PORT --name $CONTAINER_NAME $IMAGE_NAME
                 """
             }
@@ -28,7 +29,7 @@ pipeline {
         stage('Wait for Readiness') {
             steps {
                 echo "Waiting for API..."
-                sh "sleep 5"
+                sh "sleep 8"
             }
         }
 
@@ -40,17 +41,7 @@ pipeline {
                         curl -s -X POST http://host.docker.internal:8000/predict \
                         -H "Content-Type: application/json" \
                         -d '{
-                          "fixed_acidity": 7.4,
-                          "volatile_acidity": 0.7,
-                          "citric_acid": 0.0,
-                          "residual_sugar": 1.9,
-                          "chlorides": 0.076,
-                          "free_sulfur_dioxide": 11.0,
-                          "total_sulfur_dioxide": 34.0,
-                          "density": 0.9978,
-                          "pH": 3.51,
-                          "sulphates": 0.56,
-                          "alcohol": 9.4
+                          "features": [7.4, 0.7, 0.0, 1.9, 0.076, 11.0, 34.0, 0.9978, 3.51, 0.56, 9.4]
                         }'
                         ''',
                         returnStdout: true
@@ -73,7 +64,7 @@ pipeline {
                         curl -s -o /dev/null -w "%{http_code}" \
                         -X POST http://host.docker.internal:8000/predict \
                         -H "Content-Type: application/json" \
-                        -d '{"fixed_acidity": 7.4}'
+                        -d '{"features": [7.4]}'
                         ''',
                         returnStdout: true
                     ).trim()
@@ -108,5 +99,4 @@ pipeline {
             sh "docker ps -a"
         }
     }
-    
 }
