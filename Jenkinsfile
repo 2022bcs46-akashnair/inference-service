@@ -37,7 +37,7 @@ pipeline {
                 script {
                     def response = sh(
                         script: '''
-                        curl -s -X POST http://localhost:8000/predict \
+                        curl -s -X POST http://host.docker.internal:8000/predict \
                         -H "Content-Type: application/json" \
                         -d '{
                           "fixed_acidity": 7.4,
@@ -71,7 +71,7 @@ pipeline {
                     def status = sh(
                         script: '''
                         curl -s -o /dev/null -w "%{http_code}" \
-                        -X POST http://localhost:8000/predict \
+                        -X POST http://host.docker.internal:8000/predict \
                         -H "Content-Type: application/json" \
                         -d '{"fixed_acidity": 7.4}'
                         ''',
