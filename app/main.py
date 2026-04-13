@@ -3,7 +3,7 @@ import numpy as np
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-# Load model
+# Load models
 model = joblib.load("app/model/model.pkl")
 
 app = FastAPI()
